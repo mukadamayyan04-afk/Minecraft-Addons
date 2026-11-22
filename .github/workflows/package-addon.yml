@@ -1,0 +1,48 @@
+name: Package Solo Leveling Addon
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - "SoloLeveling-BP/**"
+      - "SoloLeveling-RP/**"
+      - ".github/workflows/package-addon.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate pack manifests
+        run: |
+          python3 - <<'PY'
+          import json
+          for path in ["SoloLeveling-BP/manifest.json", "SoloLeveling-RP/manifest.json"]:
+              with open(path, encoding="utf-8") as f:
+                  manifest = json.load(f)
+              assert manifest.get("format_version") == 2, f"Invalid format_version: {path}"
+              assert manifest.get("header", {}).get("uuid"), f"Missing header UUID: {path}"
+              assert manifest.get("modules"), f"Missing modules: {path}"
+              print(f"Validated {path}")
+          PY
+
+      - name: Package MCPACK and MCADDON files
+        run: |
+          mkdir -p dist
+          (cd SoloLeveling-BP && zip -qr ../dist/SoloLeveling-BP.mcpack .)
+          (cd SoloLeveling-RP && zip -qr ../dist/SoloLeveling-RP.mcpack .)
+          zip -qr dist/SoloLeveling.mcaddon SoloLeveling-BP SoloLeveling-RP
+          ls -lh dist
+
+      - name: Upload addon files
+        uses: actions/upload-artifact@v4
+        with:
+          name: Solo-Leveling-Minecraft-Addon
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 14
