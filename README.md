@@ -1,36 +1,21 @@
-# Solo Leveling - Minecraft Bedrock Addon
+# Solo Leveling Bedrock Addon
 
-A starter addon for Minecraft Bedrock Edition (Android / PE).
+Android / Bedrock addon with a command-driven Hunter RPG foundation.
 
-## Included packs
+## Current implemented systems
+- Hunter levels, XP progression, E/D/C/B/A/S ranks and actionbar HUD.
+- Stat points on level-up: Strength, Vitality, Agility and Intelligence.
+- Mana regeneration and a temporary Power Surge skill with cooldown.
+- Dungeon encounter: Elite Husk boss and three guards; boss defeat grants bonus XP and mana.
+- Shadow companion summon using a tamed wolf (only when the installed Bedrock API exposes tameable support).
+- XP and kill tracking for a curated list of hostile mobs.
+- Chat commands: `!sl help`, `!sl status`, `!sl stats`, `!sl add strength` (also vitality/agility/intelligence), `!sl skill`, `!sl dungeon`, `!sl shadow`.
 
-- **SoloLeveling-BP** — Behavior Pack with the Hunter progression foundation:
-  - Hunter levels and XP scoreboards
-  - E, D, C, B, A and S rank thresholds
-  - XP for defeating entities
-  - On-screen Hunter level, rank and XP display
-- **SoloLeveling-RP** — Resource Pack with pack metadata and localization foundation.
+## Install
+1. Download the latest `.mcaddon` from GitHub Releases.
+2. Open it with Minecraft.
+3. Activate both the Solo Leveling Behavior Pack and Resource Pack in a world.
+4. Enable the Script/Beta APIs only if Minecraft prompts for them.
 
-## Build downloads
-
-GitHub Actions packages three files:
-- `SoloLeveling-BP.mcpack`
-- `SoloLeveling-RP.mcpack`
-- `SoloLeveling.mcaddon` (combined pack)
-
-Open the repository's **Actions** tab, select **Package Solo Leveling Addon**, run the workflow, then download the artifact from the completed run.
-
-## Install on Android
-
-1. Download the combined `.mcaddon` file, or download both separate `.mcpack` files.
-2. Open the downloaded file with Minecraft.
-3. In the world settings, enable both the Behavior Pack and Resource Pack.
-4. Create or enter the world and check that the Hunter System action bar appears.
-
-## Compatibility note
-
-The pack uses the stable `@minecraft/server` 2.0.0 script module. Compatibility depends on the installed Bedrock release. The GitHub workflow validates the JSON manifests and creates the package files; it does not replace an in-game test on the target Android device.
-
-## Current scope
-
-This is the first playable foundation, not a complete Solo Leveling remake. Dungeons, boss encounters, quests, custom hunter gear, shadow companions and custom art are not included yet.
+## Compatibility
+The pack targets Bedrock 1.21.90+ and uses `@minecraft/server` 2.0.0. Exact compatibility depends on the installed Android Bedrock build. This repository is not yet a complete recreation of the anime: custom dungeon dimensions, original 3D boss models, custom weapons/armor, cinematic UI, and persistent shadow army are not implemented yet.
