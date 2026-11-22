@@ -1,15 +1,16 @@
-name: Package Solo Leveling Addon
+name: Build and Publish Solo Leveling Addon
 
 on:
   workflow_dispatch:
   push:
+    branches: [main]
     paths:
       - "SoloLeveling-BP/**"
       - "SoloLeveling-RP/**"
       - ".github/workflows/package-addon.yml"
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   package:
@@ -39,10 +40,27 @@ jobs:
           zip -qr dist/SoloLeveling.mcaddon SoloLeveling-BP SoloLeveling-RP
           ls -lh dist
 
-      - name: Upload addon files
+      - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: Solo-Leveling-Minecraft-Addon
           path: dist/*
           if-no-files-found: error
           retention-days: 14
+
+      - name: Publish direct-download release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: latest
+          name: Latest Solo Leveling Addon
+          body: |
+            Automatically generated Minecraft Bedrock addon packages.
+
+            Download SoloLeveling.mcaddon to import both packs together.
+            The individual BP and RP .mcpack files are also available below.
+          files: |
+            dist/SoloLeveling.mcaddon
+            dist/SoloLeveling-BP.mcpack
+            dist/SoloLeveling-RP.mcpack
+          overwrite_files: true
+          make_latest: true
