@@ -1,0 +1,46 @@
+{
+  "format_version": 2,
+  "header": {
+    "name": "Solo Leveling - Behavior Pack",
+    "description": "Hunter progression, XP, ranks, skills and dungeon foundations.",
+    "uuid": "7d1d0f38-3b11-4f89-9b71-5e6d3a8a1001",
+    "version": [
+      0,
+      1,
+      0
+    ],
+    "min_engine_version": [
+      1,
+      21,
+      0
+    ]
+  },
+  "modules": [
+    {
+      "type": "data",
+      "uuid": "7d1d0f38-3b11-4f89-9b71-5e6d3a8a1002",
+      "version": [
+        0,
+        1,
+        0
+      ]
+    },
+    {
+      "type": "script",
+      "language": "javascript",
+      "entry": "scripts/main.js",
+      "uuid": "7d1d0f38-3b11-4f89-9b71-5e6d3a8a1003",
+      "version": [
+        0,
+        1,
+        0
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "module_name": "@minecraft/server",
+      "version": "2.0.0"
+    }
+  ]
+}
