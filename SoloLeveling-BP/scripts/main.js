@@ -1,6 +1,6 @@
 import { world, system } from "@minecraft/server";
 
-const IDS={level:"sl_level",xp:"sl_xp",mana:"sl_mana",points:"sl_points",strength:"sl_str",vitality:"sl_vit",agility:"sl_agi",intelligence:"sl_int",kills:"sl_kills",quest:"sl_quest",questKills:"sl_qkills",dungeons:"sl_dungeons",coins:"sl_coins"};
+const IDS={level:"sl_level",xp:"sl_xp",mana:"sl_mana",points:"sl_points",strength:"sl_str",vitality:"sl_vit",agility:"sl_agi",intelligence:"sl_int",kills:"sl_kills",quest:"sl_quest",questKills:"sl_qkills",dungeons:"sl_dungeons",coins:"sl_coins",initialized:"sl_initialized"};
 const RANKS=[{min:1,name:"E"},{min:10,name:"D"},{min:20,name:"C"},{min:35,name:"B"},{min:50,name:"A"},{min:75,name:"S"}];
 const HOSTILES=new Set(["minecraft:zombie","minecraft:husk","minecraft:drowned","minecraft:skeleton","minecraft:stray","minecraft:bogged","minecraft:creeper","minecraft:spider","minecraft:cave_spider","minecraft:enderman","minecraft:witch","minecraft:phantom","minecraft:slime","minecraft:magma_cube","minecraft:blaze","minecraft:ghast","minecraft:pillager","minecraft:vindicator","minecraft:evoker","minecraft:ravager","minecraft:warden","minecraft:guardian","minecraft:elder_guardian","minecraft:piglin_brute","minecraft:zoglin","minecraft:wither_skeleton"]);
 const cooldowns=new Map(),dungeonCooldowns=new Map(),shadowCooldowns=new Map(),healCooldowns=new Map();
@@ -11,7 +11,7 @@ function add(p,k,v){set(p,k,score(p,k)+v);}
 function rank(l){return [...RANKS].reverse().find(r=>l>=r.min)?.name??"E";}
 function need(l){return l*100;}
 function tell(p,m){p.sendMessage("§b[HUNTER SYSTEM] §f"+m);}
-function init(p){for(const k of Object.keys(IDS))objective(k);if(score(p,"level")<1)set(p,"level",1);if(score(p,"mana")<1)set(p,"mana",100);}
+function init(p){for(const k of Object.keys(IDS))objective(k);if(score(p,"initialized")<1){set(p,"level",1);set(p,"mana",100);set(p,"initialized",1);}}
 function xp(p,n){let l=Math.max(1,score(p,"level")),v=score(p,"xp")+n,g=0;while(v>=need(l)){v-=need(l);l++;g++;add(p,"points",5);}set(p,"level",l);set(p,"xp",v);if(g)tell(p,"LEVEL UP! Lv."+l+" | +"+g*5+" stat points.");}
 function status(p){const l=score(p,"level");tell(p,"LEVEL "+l+" | "+rank(l)+" RANK | XP "+score(p,"xp")+"/"+need(l));tell(p,"MANA "+score(p,"mana")+"/100 | COINS "+score(p,"coins")+" | KILLS "+score(p,"kills")+" | GATES "+score(p,"dungeons")+" | POINTS "+score(p,"points"));}
 function stats(p){tell(p,"STR "+score(p,"strength")+" | VIT "+score(p,"vitality")+" | AGI "+score(p,"agility")+" | INT "+score(p,"intelligence"));}
