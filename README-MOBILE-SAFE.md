@@ -1,6 +1,6 @@
 # Solo Leveling Mobile - Story Edition
 
-A mobile-focused, non-combat Minecraft Bedrock add-on with selectable play modes, characters and a five-chapter Hunter Registry story.
+A mobile-focused, non-combat Minecraft Bedrock add-on with selectable play modes, characters, five original illustrated chapter cards and a five-chapter Hunter Registry story.
 
 ## Choose your mode
 - **Story** — five original chapters, narrative dialogue, objectives and rewards.
