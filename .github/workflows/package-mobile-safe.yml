@@ -67,10 +67,34 @@ jobs:
               print("Archive OK:", path, path.stat().st_size, "bytes")
           PY
 
-      - name: Upload story edition
+      - name: Upload combined add-on
         uses: actions/upload-artifact@v4
         with:
-          name: SoloLeveling-Story-Edition
+          name: SoloLeveling-MCADDON
+          path: dist/SoloLeveling-Story-Edition.mcaddon
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload behavior pack separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoloLeveling-Behavior-Pack-MCPACK
+          path: dist/SoloLeveling-Story-BP.mcpack
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload resource pack separately
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoloLeveling-Resource-Pack-MCPACK
+          path: dist/SoloLeveling-Story-RP.mcpack
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Upload all files together
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoloLeveling-Story-Edition-All-Files
           path: dist/*
           if-no-files-found: error
           retention-days: 30
