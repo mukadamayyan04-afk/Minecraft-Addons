@@ -1,2 +1,3 @@
-pack.name=Solo Leveling - Hunter System
-pack.description=Hunter progression, stats, skills, dungeons and shadow companion system
+pack.name=Solo Leveling — Shadow Monarch Resources
+pack.description=Hunter RPG resources with a custom Shadow Knight companion.
+entity.solo:shadow_knight.name=Shadow Knight

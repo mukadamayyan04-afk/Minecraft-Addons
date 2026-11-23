@@ -1,23 +1,6 @@
 {
-  "format_version": 2,
-  "header": {
-    "name": "Solo Leveling - Resource Pack",
-    "description": "Hunter System resource pack foundation.",
-    "uuid": "a4c2e18b-6f20-4f9b-8c31-2d8a6a8b2001",
-    "version": [0, 1, 0],
-    "min_engine_version": [1, 21, 90]
-  },
-  "modules": [
-    {
-      "type": "resources",
-      "uuid": "a4c2e18b-6f20-4f9b-8c31-2d8a6a8b2002",
-      "version": [0, 1, 0]
-    }
-  ],
-  "dependencies": [
-    {
-      "uuid": "7d1d0f38-3b11-4f89-9b71-5e6d3a8a1001",
-      "version": [0, 1, 0]
-    }
-  ]
+ "format_version":2,
+ "header":{"name":"Solo Leveling — Shadow Monarch Resources","description":"Custom Shadow Knight geometry, idle animation and dark fantasy entity visuals.","uuid":"a4c2e18b-6f20-4f9b-8c31-2d8a6a8b2001","version":[0,2,0],"min_engine_version":[1,21,90]},
+ "modules":[{"type":"resources","uuid":"a4c2e18b-6f20-4f9b-8c31-2d8a6a8b2002","version":[0,2,0]}],
+ "dependencies":[{"uuid":"7d1d0f38-3b11-4f89-9b71-5e6d3a8a1001","version":[0,2,0]}]
 }
