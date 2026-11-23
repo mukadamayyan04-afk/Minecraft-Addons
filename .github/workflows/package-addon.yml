@@ -7,6 +7,7 @@ on:
     paths:
       - "SoloLeveling-BP/**"
       - "SoloLeveling-RP/**"
+      - "tools/**"
       - ".github/workflows/package-addon.yml"
 
 permissions:
@@ -19,10 +20,17 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate pack manifests
+      - name: Install texture generator dependency
+        run: python3 -m pip install --user Pillow
+
+      - name: Generate original HD resource assets
+        run: python3 tools/generate_assets.py
+
+      - name: Validate pack manifests and generated assets
         run: |
           python3 - <<'PY'
           import json
+          from pathlib import Path
           for path in ["SoloLeveling-BP/manifest.json", "SoloLeveling-RP/manifest.json"]:
               with open(path, encoding="utf-8") as f:
                   manifest = json.load(f)
@@ -30,6 +38,11 @@ jobs:
               assert manifest.get("header", {}).get("uuid"), f"Missing header UUID: {path}"
               assert manifest.get("modules"), f"Missing modules: {path}"
               print(f"Validated {path}")
+          textures = list(Path("SoloLeveling-RP/textures").rglob("*.png"))
+          sounds = list(Path("SoloLeveling-RP/sounds").rglob("*.wav"))
+          assert len(textures) >= 20, "HD texture generation incomplete"
+          assert len(sounds) >= 4, "Sound generation incomplete"
+          print(f"Validated {len(textures)} textures and {len(sounds)} sound effects")
           PY
 
       - name: Package MCPACK and MCADDON files
@@ -54,7 +67,7 @@ jobs:
           tag_name: latest
           name: Latest Solo Leveling Addon
           body: |
-            Automatically generated Minecraft Bedrock addon packages.
+            Solo Leveling Bedrock addon with generated original HD materials and sound effects.
 
             Download SoloLeveling.mcaddon to import both packs together.
             The individual BP and RP .mcpack files are also available below.
