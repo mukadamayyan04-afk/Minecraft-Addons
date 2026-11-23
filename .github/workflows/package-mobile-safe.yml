@@ -20,64 +20,50 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate JavaScript syntax and story commands
+      - name: Validate JavaScript syntax and selection features
         run: |
           node --check MobileSafe-BP/scripts/main.js
           grep -q 'The First Awakening' MobileSafe-BP/scripts/main.js
           grep -q 'The Sealed Archive' MobileSafe-BP/scripts/main.js
-          grep -q 'continueStory' MobileSafe-BP/scripts/main.js
+          grep -q 'chooseMode' MobileSafe-BP/scripts/main.js
+          grep -q 'chooseCharacter' MobileSafe-BP/scripts/main.js
+          grep -q 'playerPlaceBlock' MobileSafe-BP/scripts/main.js
 
       - name: Build and validate Bedrock packs
         run: |
           python3 - <<'PY'
           import json, zipfile
           from pathlib import Path
-
           root = Path(".")
           dist = root / "dist"
           dist.mkdir(exist_ok=True)
-
           def make_pack(source, output):
               with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
                   for path in sorted(source.rglob("*")):
-                      if path.is_file():
-                          archive.write(path, path.relative_to(source).as_posix())
-
+                      if path.is_file(): archive.write(path, path.relative_to(source).as_posix())
           for folder in ("MobileSafe-BP", "MobileSafe-RP"):
               manifest_path = root / folder / "manifest.json"
               manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-              assert manifest["format_version"] == 2
-              assert manifest["header"]["uuid"]
-              assert manifest["modules"]
+              assert manifest["format_version"] == 2 and manifest["header"]["uuid"] and manifest["modules"]
               assert manifest["header"]["version"] == [0, 4, 0]
               print("Manifest OK:", manifest_path)
-
           bp = dist / "SoloLeveling-Story-BP.mcpack"
           rp = dist / "SoloLeveling-Story-RP.mcpack"
           make_pack(root / "MobileSafe-BP", bp)
           make_pack(root / "MobileSafe-RP", rp)
-
           addon = dist / "SoloLeveling-Story-Edition.mcaddon"
           with zipfile.ZipFile(addon, "w", zipfile.ZIP_DEFLATED) as outer:
-              outer.write(bp, bp.name)
-              outer.write(rp, rp.name)
-
+              outer.write(bp, bp.name); outer.write(rp, rp.name)
           def validate_pack_bytes(data):
               import io
               with zipfile.ZipFile(io.BytesIO(data)) as pack:
-                  assert pack.testzip() is None
-                  assert "manifest.json" in pack.namelist()
+                  assert pack.testzip() is None and "manifest.json" in pack.namelist()
                   json.loads(pack.read("manifest.json"))
-
           with zipfile.ZipFile(addon) as outer:
-              assert outer.testzip() is None
-              assert set(outer.namelist()) == {bp.name, rp.name}
-              for name in outer.namelist():
-                  validate_pack_bytes(outer.read(name))
-
+              assert outer.testzip() is None and set(outer.namelist()) == {bp.name, rp.name}
+              for name in outer.namelist(): validate_pack_bytes(outer.read(name))
           for path in (bp, rp, addon):
-              with zipfile.ZipFile(path) as archive:
-                  assert archive.testzip() is None
+              with zipfile.ZipFile(path) as archive: assert archive.testzip() is None
               print("Archive OK:", path, path.stat().st_size, "bytes")
           PY
 
