@@ -7,6 +7,7 @@ on:
       - "MobileSafe-BP/**"
       - "MobileSafe-RP/**"
       - "README-MOBILE-SAFE.md"
+      - "tools/generate_mobile_story_art.py"
       - ".github/workflows/package-mobile-safe.yml"
   workflow_dispatch:
 
@@ -19,6 +20,13 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Generate original story artwork and pack icon
+        run: |
+          python3 -m pip install --user Pillow
+          python3 tools/generate_mobile_story_art.py
+          test -f MobileSafe-RP/pack_icon.png
+          test $(find MobileSafe-RP/textures/ui/hunter_chapters -name '*.png' | wc -l) -eq 5
 
       - name: Validate JavaScript syntax and selection features
         run: |
@@ -47,6 +55,9 @@ jobs:
               assert manifest["format_version"] == 2 and manifest["header"]["uuid"] and manifest["modules"]
               assert manifest["header"]["version"] == [0, 4, 1]
               print("Manifest OK:", manifest_path)
+          art = list((root / "MobileSafe-RP/textures/ui/hunter_chapters").glob("*.png"))
+          assert len(art) == 5 and (root / "MobileSafe-RP/pack_icon.png").is_file()
+          assert sum(p.stat().st_size for p in art) > 500_000, "Story artwork unexpectedly small"
           bp = dist / "SoloLeveling-Story-BP.mcpack"
           rp = dist / "SoloLeveling-Story-RP.mcpack"
           make_pack(root / "MobileSafe-BP", bp)
