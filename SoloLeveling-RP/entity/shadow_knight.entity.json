@@ -4,7 +4,7 @@
   "description":{
    "identifier":"solo:shadow_knight",
    "materials":{"default":"entity_alphatest"},
-   "textures":{"default":"textures/entity/iron_golem/iron_golem"},
+   "textures":{"default":"textures/entity/shadow_knight"},
    "geometry":{"default":"geometry.solo.shadow_knight"},
    "render_controllers":["controller.render.solo.shadow_knight"],
    "animations":{"idle":"animation.solo.shadow_knight.idle"},
