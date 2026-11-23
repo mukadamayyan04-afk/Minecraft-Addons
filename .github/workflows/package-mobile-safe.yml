@@ -1,0 +1,85 @@
+name: Build Solo Leveling Mobile Safe Edition
+
+on:
+  push:
+    branches: [mobile-safe-progression]
+    paths:
+      - "MobileSafe-BP/**"
+      - "MobileSafe-RP/**"
+      - "README-MOBILE-SAFE.md"
+      - ".github/workflows/package-mobile-safe.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Validate JavaScript syntax
+        run: node --check MobileSafe-BP/scripts/main.js
+
+      - name: Build and validate Bedrock packs
+        run: |
+          python3 - <<'PY'
+          import json, zipfile
+          from pathlib import Path
+
+          root = Path(".")
+          dist = root / "dist"
+          dist.mkdir(exist_ok=True)
+
+          def make_pack(source, output):
+              with zipfile.ZipFile(output, "w", zipfile.ZIP_DEFLATED) as archive:
+                  for path in sorted(source.rglob("*")):
+                      if path.is_file():
+                          archive.write(path, path.relative_to(source).as_posix())
+
+          for folder in ("MobileSafe-BP", "MobileSafe-RP"):
+              manifest_path = root / folder / "manifest.json"
+              manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+              assert manifest["format_version"] == 2
+              assert manifest["header"]["uuid"]
+              assert manifest["modules"]
+              print("Manifest OK:", manifest_path)
+
+          bp = dist / "SoloLeveling-BP.mcpack"
+          rp = dist / "SoloLeveling-RP.mcpack"
+          make_pack(root / "MobileSafe-BP", bp)
+          make_pack(root / "MobileSafe-RP", rp)
+
+          addon = dist / "SoloLeveling-Mobile-Safe.mcaddon"
+          with zipfile.ZipFile(addon, "w", zipfile.ZIP_DEFLATED) as outer:
+              outer.write(bp, bp.name)
+              outer.write(rp, rp.name)
+
+          def validate_pack_bytes(data):
+              import io
+              with zipfile.ZipFile(io.BytesIO(data)) as pack:
+                  assert pack.testzip() is None
+                  assert "manifest.json" in pack.namelist()
+                  json.loads(pack.read("manifest.json"))
+
+          with zipfile.ZipFile(addon) as outer:
+              assert outer.testzip() is None
+              assert set(outer.namelist()) == {bp.name, rp.name}
+              for name in outer.namelist():
+                  validate_pack_bytes(outer.read(name))
+
+          for path in (bp, rp, addon):
+              with zipfile.ZipFile(path) as archive:
+                  assert archive.testzip() is None
+              print("Archive OK:", path, path.stat().st_size, "bytes")
+          PY
+
+      - name: Upload import-ready files
+        uses: actions/upload-artifact@v4
+        with:
+          name: SoloLeveling-Mobile-Safe-Import
+          path: dist/*
+          if-no-files-found: error
+          retention-days: 30
