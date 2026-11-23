@@ -11,7 +11,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   package:
@@ -45,7 +45,7 @@ jobs:
               manifest_path = root / folder / "manifest.json"
               manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
               assert manifest["format_version"] == 2 and manifest["header"]["uuid"] and manifest["modules"]
-              assert manifest["header"]["version"] == [0, 4, 0]
+              assert manifest["header"]["version"] == [0, 4, 1]
               print("Manifest OK:", manifest_path)
           bp = dist / "SoloLeveling-Story-BP.mcpack"
           rp = dist / "SoloLeveling-Story-RP.mcpack"
@@ -90,6 +90,19 @@ jobs:
           path: dist/SoloLeveling-Story-RP.mcpack
           if-no-files-found: error
           retention-days: 30
+
+      - name: Publish direct-install files as GitHub Release assets
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: v0.4.1-mobile-safe
+          name: Solo Leveling Story Edition 0.4.1 (Mobile)
+          body: "Direct-install Bedrock files. Download the .mcaddon file itself; do not rename the artifact ZIP."
+          prerelease: true
+          files: |
+            dist/SoloLeveling-Story-Edition.mcaddon
+            dist/SoloLeveling-Story-BP.mcpack
+            dist/SoloLeveling-Story-RP.mcpack
+          overwrite_files: true
 
       - name: Upload all files together
         uses: actions/upload-artifact@v4
