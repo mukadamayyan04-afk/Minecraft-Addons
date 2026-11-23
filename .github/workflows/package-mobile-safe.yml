@@ -1,4 +1,4 @@
-name: Build Solo Leveling Mobile Safe Edition
+name: Build Solo Leveling Mobile Story Edition
 
 on:
   push:
@@ -20,8 +20,12 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Validate JavaScript syntax
-        run: node --check MobileSafe-BP/scripts/main.js
+      - name: Validate JavaScript syntax and story commands
+        run: |
+          node --check MobileSafe-BP/scripts/main.js
+          grep -q 'The First Awakening' MobileSafe-BP/scripts/main.js
+          grep -q 'The Sealed Archive' MobileSafe-BP/scripts/main.js
+          grep -q 'continueStory' MobileSafe-BP/scripts/main.js
 
       - name: Build and validate Bedrock packs
         run: |
@@ -45,14 +49,15 @@ jobs:
               assert manifest["format_version"] == 2
               assert manifest["header"]["uuid"]
               assert manifest["modules"]
+              assert manifest["header"]["version"] == [0, 4, 0]
               print("Manifest OK:", manifest_path)
 
-          bp = dist / "SoloLeveling-BP.mcpack"
-          rp = dist / "SoloLeveling-RP.mcpack"
+          bp = dist / "SoloLeveling-Story-BP.mcpack"
+          rp = dist / "SoloLeveling-Story-RP.mcpack"
           make_pack(root / "MobileSafe-BP", bp)
           make_pack(root / "MobileSafe-RP", rp)
 
-          addon = dist / "SoloLeveling-Mobile-Safe.mcaddon"
+          addon = dist / "SoloLeveling-Story-Edition.mcaddon"
           with zipfile.ZipFile(addon, "w", zipfile.ZIP_DEFLATED) as outer:
               outer.write(bp, bp.name)
               outer.write(rp, rp.name)
@@ -76,10 +81,10 @@ jobs:
               print("Archive OK:", path, path.stat().st_size, "bytes")
           PY
 
-      - name: Upload import-ready files
+      - name: Upload story edition
         uses: actions/upload-artifact@v4
         with:
-          name: SoloLeveling-Mobile-Safe-Import
+          name: SoloLeveling-Story-Edition
           path: dist/*
           if-no-files-found: error
           retention-days: 30
