@@ -31,8 +31,14 @@ This edition focuses on exploration, discovery, collection, construction and sto
 ## Compatibility
 Targets Minecraft Bedrock 1.21.90+ and `@minecraft/server` 2.0.0.
 
-## Import
-Download the GitHub Actions artifact, extract the artifact ZIP, then open `SoloLeveling-Story-Edition.mcaddon` with Minecraft. Separate BP and RP `.mcpack` files are included.
+## Import on Android
+1. In GitHub Actions, download the **SoloLeveling-MCADDON** artifact ZIP.
+2. In the phone's Downloads folder, extract that ZIP (do not rename the downloaded artifact ZIP to .mcaddon).
+3. Open Minecraft first, then return to Downloads and tap the extracted `SoloLeveling-Story-Edition.mcaddon` file.
+4. If Android does not offer Minecraft for the .mcaddon file, try the separate **SoloLeveling-Behavior-Pack-MCPACK** and **SoloLeveling-Resource-Pack-MCPACK** artifacts one at a time. Import both packs, then enable both in the world's Behavior Packs and Resource Packs settings.
+5. The `SoloLeveling-Story-Edition-All-Files` artifact contains all three import files together.
+
+**Android note:** Some file managers do not register .mcaddon/.mcpack as supported file types and show a generic '?' icon. That icon alone does not prove the pack is corrupt. If Minecraft is still absent from the file-opening/share options, the remaining issue is Android's file-handler association; a packaging change cannot guarantee that the file manager will show Minecraft.
 
 ## Test status
 GitHub Actions checks JavaScript syntax, manifest JSON, pack roots and nested archive integrity. Actual in-game testing on the target phone and Minecraft version is still required.
