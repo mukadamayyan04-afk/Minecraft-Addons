@@ -1,0 +1,1 @@
+tellraw @s {"rawtext":[{"text":"§5§lHUNTER RANK REQUIREMENTS\n§fE-Rank §7— Level 1\n§fD-Rank §7— Level 10\n§fC-Rank §7— Level 20\n§fB-Rank §7— Level 35\n§fA-Rank §7— Level 50\n§fS-Rank §7— Level 75"}]}
