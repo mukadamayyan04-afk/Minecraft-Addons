@@ -4,7 +4,7 @@ const OBJECTIVES = {
   level: "sl_level", xp: "sl_xp", points: "sl_points", blocks: "sl_blocks",
   mission: "sl_mission", missionBlocks: "sl_mblocks", coins: "sl_coins",
   initialized: "sl_init", chapter: "sl_chapter", storyBlocks: "sl_sblocks",
-  storyReady: "sl_sready", storyStarted: "sl_sstart"
+  storyReady: "sl_sready", storyStarted: "sl_sstart", mode: "sl_mode", character: "sl_char", placed: "sl_placed"
 };
 const RANKS = [
   { min: 1, name: "E" }, { min: 10, name: "D" }, { min: 20, name: "C" },
@@ -48,6 +48,35 @@ function add(player, key, value) { set(player, key, get(player, key) + value); }
 function rank(level) { return [...RANKS].reverse().find(item => level >= item.min)?.name ?? "E"; }
 function xpNeeded(level) { return level * 100; }
 function say(player, message) { player.sendMessage("§b[HUNTER SYSTEM] §f" + message); }
+const MODES = { story: 1, explore: 2, builder: 3 };
+const CHARACTERS = { scout: 1, scholar: 2, architect: 3 };
+function modeName(value) { return ["Unselected", "Story", "Explorer", "Builder"][value] ?? "Unselected"; }
+function characterName(value) { return ["Unselected", "Scout", "Scholar", "Architect"][value] ?? "Unselected"; }
+function setup(player) {
+  say(player, "CHOOSE MODE: !sl mode story | explore | builder");
+  say(player, "CHOOSE CHARACTER: !sl character scout | scholar | architect");
+  say(player, "Scout = bonus gathering XP | Scholar = bonus chapter XP | Architect = bonus building XP.");
+  say(player, "Current: " + modeName(get(player, "mode")) + " Mode | " + characterName(get(player, "character")));
+}
+function ready(player) {
+  if (get(player, "mode") < 1 || get(player, "character") < 1) { say(player, "First choose a mode and character. Type !sl setup."); return false; }
+  return true;
+}
+function chooseMode(player, name) {
+  const value = MODES[name];
+  if (!value) { say(player, "Choose: story, explore or builder."); return; }
+  if (get(player, "storyStarted") > 0) { say(player, "Mode is locked after your story begins."); return; }
+  set(player, "mode", value); say(player, modeName(value) + " Mode selected.");
+  if (value === 1) say(player, "Story chapters are enabled. Type !sl story, then !sl accept.");
+  if (value === 2) say(player, "Explore freely, gather resources and earn exploration XP.");
+  if (value === 3) say(player, "Build freely and earn XP for placing blocks.");
+}
+function chooseCharacter(player, name) {
+  const value = CHARACTERS[name];
+  if (!value) { say(player, "Choose: scout, scholar or architect."); return; }
+  if (get(player, "storyStarted") > 0) { say(player, "Character is locked after your story begins."); return; }
+  set(player, "character", value); say(player, characterName(value) + " selected.");
+}
 
 function init(player) {
   for (const key of Object.keys(OBJECTIVES)) objective(key);
@@ -55,6 +84,7 @@ function init(player) {
     set(player, "level", 1); set(player, "xp", 0); set(player, "initialized", 1);
     set(player, "chapter", 0); set(player, "storyBlocks", 0);
     set(player, "storyReady", 0); set(player, "storyStarted", 0);
+    set(player, "mode", 0); set(player, "character", 0); set(player, "placed", 0);
   }
 }
 function giveXp(player, amount) {
@@ -70,9 +100,11 @@ function giveXp(player, amount) {
 function status(player) {
   const level = Math.max(1, get(player, "level"));
   say(player, "Level " + level + " | " + rank(level) + " Rank | XP " + get(player, "xp") + "/" + xpNeeded(level));
-  say(player, "Blocks gathered: " + get(player, "blocks") + " | Exploration points: " + get(player, "points") + " | Coins: " + get(player, "coins"));
+  say(player, "Blocks gathered: " + get(player, "blocks") + " | Blocks placed: " + get(player, "placed") + " | Points: " + get(player, "points") + " | Coins: " + get(player, "coins"));
+  say(player, "Mode: " + modeName(get(player, "mode")) + " | Character: " + characterName(get(player, "character")));
 }
 function story(player) {
+  if (get(player, "mode") !== 1) { say(player, "Story chapters require Story Mode. Type !sl mode story."); return; }
   if (get(player, "storyStarted") < 1) {
     say(player, "STORY MODE: Five chapters follow your journey from a new registry recruit to a trusted explorer.");
     say(player, "Type !sl accept to begin Chapter 1: The First Awakening.");
@@ -95,6 +127,8 @@ function story(player) {
   }
 }
 function acceptStory(player) {
+  if (!ready(player)) return;
+  if (get(player, "mode") !== 1) { say(player, "Select Story Mode first with !sl mode story."); return; }
   if (get(player, "storyStarted") > 0) { say(player, "Your story has already started. Type !sl story to view your chapter."); return; }
   set(player, "storyStarted", 1); set(player, "chapter", 1); set(player, "storyBlocks", 0);
   set(player, "storyReady", 0);
@@ -107,12 +141,14 @@ function continueStory(player) {
   if (number > CHAPTERS.length) { say(player, "You have completed every available story chapter."); return; }
   if (get(player, "storyReady") !== 1) { say(player, "Your current chapter is not complete yet. Type !sl story to check the objective."); return; }
   const chapter = CHAPTERS[number - 1];
-  giveXp(player, chapter.rewardXp); add(player, "coins", chapter.rewardCoins);
+  const scholarBonus = get(player, "character") === CHARACTERS.scholar ? Math.ceil(chapter.rewardXp * 0.1) : 0;
+  giveXp(player, chapter.rewardXp + scholarBonus); add(player, "coins", chapter.rewardCoins);
   set(player, "chapter", number + 1); set(player, "storyBlocks", 0); set(player, "storyReady", 0);
-  say(player, "CHAPTER CLEAR: " + chapter.title + " | +" + chapter.rewardXp + " XP | +" + chapter.rewardCoins + " Hunter Coins.");
+  say(player, "CHAPTER CLEAR: " + chapter.title + " | +" + (chapter.rewardXp + scholarBonus) + " XP | +" + chapter.rewardCoins + " Hunter Coins.");
   story(player);
 }
 function startMission(player) {
+  if (!ready(player)) return;
   if (get(player, "mission") === 1) {
     say(player, "Mining Trial progress: " + get(player, "missionBlocks") + "/25 blocks."); return;
   }
@@ -123,8 +159,11 @@ function command(player, message) {
   const args = message.trim().toLowerCase().split(/\s+/);
   const action = args[1] ?? "help";
   if (action === "help") {
-    say(player, "Commands: !sl status | mission | story | accept | continue | help");
-  } else if (action === "status") status(player);
+    say(player, "Commands: !sl setup | mode | character | status | mission | story | accept | continue | help");
+  } else if (action === "setup") setup(player);
+  else if (action === "mode") chooseMode(player, args[2]);
+  else if (action === "character") chooseCharacter(player, args[2]);
+  else if (action === "status") status(player);
   else if (action === "mission") startMission(player);
   else if (action === "story") story(player);
   else if (action === "accept") acceptStory(player);
@@ -135,8 +174,8 @@ function command(player, message) {
 world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
   init(player);
   if (initialSpawn) {
-    say(player, "Mobile Hunter Story Mode is ready. Type !sl help.");
-    say(player, "A story awaits. Type !sl story to begin.");
+    say(player, "Hunter Registry is ready. First complete your setup.");
+    setup(player);
     status(player);
   }
 });
@@ -144,7 +183,9 @@ world.afterEvents.playerSpawn.subscribe(({ player, initialSpawn }) => {
 world.afterEvents.playerBreakBlock.subscribe(({ player }) => {
   init(player);
   add(player, "blocks", 1);
-  giveXp(player, 5);
+  const baseXp = get(player, "mode") === MODES.explore ? 7 : 5;
+  const scoutBonus = get(player, "character") === CHARACTERS.scout ? 2 : 0;
+  giveXp(player, baseXp + scoutBonus);
   if (get(player, "mission") === 1) {
     const progress = get(player, "missionBlocks") + 1;
     set(player, "missionBlocks", progress);
@@ -168,6 +209,14 @@ world.afterEvents.playerBreakBlock.subscribe(({ player }) => {
   }
 });
 
+world.afterEvents.playerPlaceBlock.subscribe(({ player }) => {
+  init(player); add(player, "placed", 1);
+  if (get(player, "mode") === MODES.builder) {
+    const architectBonus = get(player, "character") === CHARACTERS.architect ? 2 : 0;
+    giveXp(player, 5 + architectBonus);
+  }
+});
+
 world.beforeEvents.chatSend.subscribe(event => {
   if (!event.message.toLowerCase().startsWith("!sl")) return;
   event.cancel = true;
@@ -182,10 +231,11 @@ system.runInterval(() => {
     const level = Math.max(1, get(player, "level"));
     const chapter = get(player, "chapter");
     const storyLabel = get(player, "storyStarted") === 1 && chapter <= CHAPTERS.length ? " §7| §dCH " + chapter + "/5" : "";
+    const modeLabel = " §7| §b" + modeName(get(player, "mode")).toUpperCase();
     player.onScreenDisplay.setActionBar(
       "§bHUNTER §fLv." + level + " §7| §e" + rank(level) +
       " RANK §7| §aXP " + get(player, "xp") + "/" + xpNeeded(level) +
-      " §7| §dPTS " + get(player, "points") + storyLabel
+      " §7| §dPTS " + get(player, "points") + modeLabel + storyLabel
     );
   }
 }, 40);
