@@ -32,11 +32,10 @@ This edition focuses on exploration, discovery, collection, construction and sto
 Targets Minecraft Bedrock 1.21.90+ and `@minecraft/server` 2.0.0.
 
 ## Import on Android
-1. In GitHub Actions, download the **SoloLeveling-MCADDON** artifact ZIP.
-2. In the phone's Downloads folder, extract that ZIP (do not rename the downloaded artifact ZIP to .mcaddon).
-3. Open Minecraft first, then return to Downloads and tap the extracted `SoloLeveling-Story-Edition.mcaddon` file.
-4. If Android does not offer Minecraft for the .mcaddon file, try the separate **SoloLeveling-Behavior-Pack-MCPACK** and **SoloLeveling-Resource-Pack-MCPACK** artifacts one at a time. Import both packs, then enable both in the world's Behavior Packs and Resource Packs settings.
-5. The `SoloLeveling-Story-Edition-All-Files` artifact contains all three import files together.
+1. Open the GitHub Release page for `v0.4.1-mobile-safe` and download the actual `SoloLeveling-Story-Edition.mcaddon` release asset (not the Actions artifact ZIP).
+2. Open Minecraft, then use Android Files to locate the downloaded `.mcaddon` and choose **Open with Minecraft** if prompted.
+3. If `.mcaddon` is still not associated with Minecraft, download the two actual `.mcpack` release assets and open each with Minecraft separately; then activate both packs in the world's settings.
+4. Do not rename a GitHub Actions artifact ZIP to `.mcaddon`. The artifact ZIP is only a container; the release assets are the actual Bedrock files.
 
 **Android note:** Some file managers do not register .mcaddon/.mcpack as supported file types and show a generic '?' icon. That icon alone does not prove the pack is corrupt. If Minecraft is still absent from the file-opening/share options, the remaining issue is Android's file-handler association; a packaging change cannot guarantee that the file manager will show Minecraft.
 
