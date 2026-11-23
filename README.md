@@ -1,21 +1,31 @@
 # Solo Leveling Bedrock Addon
 
-Android / Bedrock addon with a command-driven Hunter RPG foundation.
+Android Bedrock RPG addon. Current content is a gameplay foundation, not a complete anime recreation.
 
-## Current implemented systems
-- Hunter levels, XP progression, E/D/C/B/A/S ranks and actionbar HUD.
-- Stat points on level-up: Strength, Vitality, Agility and Intelligence.
-- Mana regeneration and a temporary Power Surge skill with cooldown.
-- Dungeon encounter: Elite Husk boss and three guards; boss defeat grants bonus XP and mana.
-- Shadow companion summon using a tamed wolf (only when the installed Bedrock API exposes tameable support).
-- XP and kill tracking for a curated list of hostile mobs.
-- Chat commands: `!sl help`, `!sl status`, `!sl stats`, `!sl add strength` (also vitality/agility/intelligence), `!sl skill`, `!sl dungeon`, `!sl shadow`.
+## Hunter progression
+- Levels, XP, E/D/C/B/A/S ranks, actionbar HUD, stat points.
+- STR, VIT, AGI and INT stats.
+- Mana regeneration and Power Surge skill with cooldown.
+- Hostile-mob kill tracking.
+
+## Missions and gates
+- Hunter Trial quest: defeat 5 hostile mobs for bonus XP and mana.
+- Normal E-rank, Hard C-rank and Elite A-rank dungeon encounters.
+- Dungeon boss and guard waves, rank/level gates, cooldown and boss rewards.
+- Shadow Hound summon unlocks at level 10, subject to Bedrock tameable API support.
+
+## Commands
+- `!sl help`
+- `!sl status`
+- `!sl stats`
+- `!sl add strength` (also vitality, agility, intelligence)
+- `!sl skill`
+- `!sl quest`
+- `!sl dungeon normal`, `!sl dungeon hard`, `!sl dungeon elite`
+- `!sl shadow`
 
 ## Install
-1. Download the latest `.mcaddon` from GitHub Releases.
-2. Open it with Minecraft.
-3. Activate both the Solo Leveling Behavior Pack and Resource Pack in a world.
-4. Enable the Script/Beta APIs only if Minecraft prompts for them.
+Download the latest `.mcaddon` from Releases and open it with Minecraft. Activate both packs in world settings.
 
-## Compatibility
-The pack targets Bedrock 1.21.90+ and uses `@minecraft/server` 2.0.0. Exact compatibility depends on the installed Android Bedrock build. This repository is not yet a complete recreation of the anime: custom dungeon dimensions, original 3D boss models, custom weapons/armor, cinematic UI, and persistent shadow army are not implemented yet.
+## Compatibility and limitations
+Targets Bedrock 1.21.90+ with `@minecraft/server` 2.0.0. The exact Android build must be tested in-game. The current RP is a minimal resource-pack shell; original HD textures, custom geometry, animations, custom sounds, and custom UI are still under development. Do not treat the package size as a measure of completeness.
